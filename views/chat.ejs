@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <p id="online">users online : 0</p>
+    <p  id="'type"></p>
+    <h1>How do u want your Order Prepared</h1>
+    
+    <div id="message"></div>
+    <input type="text" id="txt" name="message" style="width: 200px; height: 30px;" oninput="change()">
+    <input type="button" value="send" style="width: 90px; height: 30px;" id="btn">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const btn = document.getElementById('btn');
+        const txt = document.getElementById('txt');
+        const area = document.getElementById('message');
+        const onLine = document.getElementById('online');
+        const typinguser = document.getElementById('type');
+        socket.on('update',data =>{
+            onLine.textContent = 'users online: ' + data;
+        })
+
+        function change() {
+            if (txt.value.length > 0) {
+                console.log(txt.value);
+                socket.emit('typing');
+                
+            }
+        }
+       
+
+        btn.addEventListener('click', () => {
+            socket.emit('chat message', txt.value);
+            txt.value = '';
+        });
+
+        socket.on('display', (msg) => {
+            const para = document.createElement('p');
+            para.textContent = msg;
+            area.appendChild(para);
+        });
+    </script>
+</body>
+</html>
